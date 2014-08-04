@@ -1,0 +1,31 @@
+body {
+
+}
+
+#frame {
+	height: 400px;
+	width: 400px;
+	border: 1px solid #407591;
+	background-color: #EEE;
+	position: relative;
+	margin: 50px;
+	padding: 0;
+	box-shadow: 1px 1px 5px rgba(0,0,0,0.7);
+}
+
+.cell {
+	position: absolute;
+	display: inline-block;
+	background-color: #CCC;
+	margin: 0;
+	z-index: 1;
+}
+.cell:hover {
+	background-color: #64A3C4;
+}
+
+.divider {
+	position: absolute;
+	background-color: #333;
+	z-index: 2;
+}
