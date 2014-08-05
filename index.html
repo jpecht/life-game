@@ -17,16 +17,21 @@
 		<div id="left-column">
 			<div id="frame"></div>
 			<div id="button-container">
-				<button type="button" class="btn btn-primary btn-lg" id="step-button">Step</button>
-				<button type="button" class="btn btn-primary btn-lg" id="randomize-button">Randomize</button>
+				<button class="btn btn-lg btn-primary" id="reset-button">Reset</button>
 			</div>
 		</div>
 		<div id="right-column">
+			<div id="score-container"><h4>
+				<span>Score: </span>
+				<span id="score-text">0</span>
+			</h4></div>
 			<div id="instruction-text">
 				<div class="instruction-header"><h4>Instructions</h4></div>
 				<ul class="instruction-list">
-					<li>Click on a tile to change its state</li>
-					<li>Hold the spacebar down to keep stepping</li>
+					<li>Use the arrow keys to move around</li>
+					<li>Hit the spacebar to stand still</li>
+					<li>The number inside your square is the number of neighbors around you</li>
+					<li>If you have less than 2 neighbors, you will start to lose health so be careful!</li>
 				</ul>
 			</div>
 			<div id="rules-text">
@@ -41,6 +46,7 @@
 		</div>
 			
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="lib/jquery.noty.packaged.min.js"></script>
 		<script src="main.js"></script>
 	</body>
 </html>
