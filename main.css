@@ -22,7 +22,7 @@ body {
 	background-color: #EEE;
 	position: relative;
 	padding: 0;
-	box-shadow: 1px 1px 5px rgba(0,0,0,0.7);
+	box-shadow: 3px 3px 8px rgba(0,0,0,0.7);
 }
 
 .cell {

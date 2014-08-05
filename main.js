@@ -57,8 +57,18 @@ window.onload = function() {
 			if (event.which === 32) {
 				// spacebar
 				clearCellOfUser(user_cell_coord);
-				update();
+				var old_state = update();
 				updateUserCell();
+				if (checkIfEqual(state, old_state)) {
+					game_over = true;
+					var user_cell = $('.user-active');
+					user_cell.removeClass(function(index, css) {
+						return (css.match(/(^|\s)health-\S+/g) || []).join(' ');
+					});
+					user_cell.addClass('health-5');
+					user_cell.text('');
+					noty({text: '<strong>Congratulations! You survived!</strong> <br /> Hit reset to play again', type: 'warning', layout: 'center', timeout: 5000});
+				}
 			} else if (event.which === 37) {
 				// left arrow
 				if (user_cell_coord[0] > 0) {
@@ -108,13 +118,19 @@ window.onload = function() {
 		if (user_cell_coord) clearCellOfUser(user_cell_coord);
 		user_cell_coord = [1, 1];
 		$('.cell').each(function() {
-			var isActive = Math.random() < 0.5;
 			var id = $(this).attr('id').split(',');
+
+			// random init
+			var isActive = Math.random() < 0.5;
+
+			// three by three init
+			//var isActive = (id[0] >= 9 && id[0] <= 11 && id[1] >= 9 && id[1] <= 11);
+			
 			state[id[0]][id[1]] = isActive;
 			$(this).toggleClass('active', isActive);
 		});		
 		updateUserCell();
-		if (countNeighbors(user_cell_coord) < 2) init();
+		//if (countNeighbors(user_cell_coord) < 2) init();
 	};
 	var update = function() {
 		for (var i = 0; i < state.length; i++) {
@@ -127,10 +143,12 @@ window.onload = function() {
 				}
 			}
 		}
-		state = future_state;
+		var old_state = copyStateArray(state);
+		state = copyStateArray(future_state);
 		setColors();
 		score++;
 		$('#score-text').text(score);
+		return old_state;
 	};	
 	var setColors = function() {
 		// using selector might not be the fastest way
@@ -188,7 +206,30 @@ window.onload = function() {
 		});
 		cell.text('');
 	};
-	
+	var copyStateArray = function(array) {
+		var array_copy = [];
+		for (var i = 0; i < array.length; i++) {
+			array_copy[i] = [];
+			for (var j = 0; j < array[i].length; j++) {
+				array_copy[i][j] = array[i][j];
+			}
+		}
+		return array_copy;
+	}
+	var checkIfEqual = function(array1, array2) {
+		var isEqual = true;
+		for (var i = 0; i < array1.length; i++) {
+			if (isEqual === false) break;
+			for (var j = 0; j < array2.length; j++) {
+				if (array1[i][j] !== array2[i][j]) {
+					isEqual = false;
+					break;
+				}
+			}
+		}
+		return isEqual;
+	}
+
 	
 	// executing
 	init();
