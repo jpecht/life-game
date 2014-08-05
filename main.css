@@ -1,6 +1,18 @@
 body {
 	margin: 50px;
+	font-family: 'Source Sans Pro', sans-serif;
+}
+
+#left-column {
+	float: left;
+	width: auto;
+	max-width: 500px;
 	text-align: center;
+}
+#right-column {
+	float: right;
+	width: 50%;
+	text-align: left;
 }
 
 #frame {
@@ -25,16 +37,21 @@ body {
 }
 
 .active {
-	background-color: #AAA;
+	background-color: #999;
 }
 
-#step-button-container {
+#button-container {
 	width: 400px;
 	margin-top: 50px;
 }
+#randomize-button { margin-left: 20px; }
 
 .divider {
 	position: absolute;
 	background-color: #333;
 	z-index: 2;
 }
+
+.instruction-header { text-align: left; }
+.instruction-list { padding-left: 10px; }
+#rules-text { margin-top: 30px; }

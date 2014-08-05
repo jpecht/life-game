@@ -7,14 +7,13 @@ window.onload = function() {
 	
 	for (var i = 0; i < height; i += step) {
 		for (var j = 0; j < width; j += step) {
-			// create cells
+			// create cells			
 			$('<div class="cell"></div>').appendTo('#frame')
 				.css('width', step + 'px')
 				.css('height', step + 'px')
 				.css('left', i + 'px')
 				.css('top', j + 'px')
-				.attr('id-x', i)
-				.attr('id-y', j);
+				.attr('id', (i/step) + ',' + (j/step));
 
 			// create dividers
 			if (i === 0 && j !== 0) {
@@ -49,9 +48,36 @@ window.onload = function() {
 	// set up user interaction
 	$('.cell').click(function() {
 		$(this).toggleClass('active');
+		var id = $(this).attr('id').split(',');
+		state[id[0]][id[1]] = $(this).hasClass('active');
 	});
 	$('#step-button').click(function() {
 		update();
+	});
+	$('#randomize-button').click(function() {
+		init();
+	});
+	
+	var spacebarDown = false;
+	$(document.body).on('keydown', function(event) {
+		if (event.keyCode === 32) {
+			spacebarDown = true;
+			
+			var setUpdate = function() {
+				setTimeout(function() {
+					if (spacebarDown) {
+						update();
+						setUpdate();
+					}
+				}, 500);
+			};
+			
+			update();
+			setUpdate();
+		}
+	});
+	$(document.body).on('keyup', function(event) {
+		if (event.keyCode === 32) spacebarDown = false;
 	});
 
 
@@ -59,12 +85,11 @@ window.onload = function() {
 	var init = function() {
 		$('.cell').each(function() {
 			var isActive = Math.random() < 0.5;
-			var idx = $(this).attr('id-x');
-			var idy = $(this).attr('id-y');
-			state[idx][idy] = isActive;
+			var id = $(this).attr('id').split(',');
+			state[id[0]][id[1]] = isActive;
 			$(this).toggleClass('active', isActive);
 		});
-	}
+	};
 	var update = function() {
 		for (var i = 0; i < state.length; i++) {
 			for (var j = 0; j < state[i].length; j++) {
@@ -97,7 +122,7 @@ window.onload = function() {
 		// using selector might not be the fastest way
 		for (var i = 0; i < state.length; i++) {
 			for (var j = 0; j < state[i].length; j++) {
-				$('div[id-x='+i+'][id-y='+j+']').toggleClass('active', state[i][j]);
+				$('div[id="'+i+','+j+'"]').toggleClass('active', state[i][j]);
 			}
 		}
 	};
