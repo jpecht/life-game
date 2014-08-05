@@ -12,7 +12,9 @@ window.onload = function() {
 				.css('width', step + 'px')
 				.css('height', step + 'px')
 				.css('left', i + 'px')
-				.css('top', j + 'px');
+				.css('top', j + 'px')
+				.attr('id-x', i)
+				.attr('id-y', j);
 
 			// create dividers
 			if (i === 0 && j !== 0) {
@@ -32,12 +34,7 @@ window.onload = function() {
 			
 	}
 	
-	
-	$('.cell').click(function() {
-		$(this).toggleClass('active');
-	});
-	
-	
+	// set up state variables
 	var state = [], future_state = [];
 	for (var i = 0; i < height/step; i++) {
 		state[i] = [];
@@ -47,7 +44,27 @@ window.onload = function() {
 			future_state[i][j] = false;
 		}
 	}
+
 	
+	// set up user interaction
+	$('.cell').click(function() {
+		$(this).toggleClass('active');
+	});
+	$('#step-button').click(function() {
+		update();
+	});
+
+
+	// core functions	
+	var init = function() {
+		$('.cell').each(function() {
+			var isActive = Math.random() < 0.5;
+			var idx = $(this).attr('id-x');
+			var idy = $(this).attr('id-y');
+			state[idx][idy] = isActive;
+			$(this).toggleClass('active', isActive);
+		});
+	}
 	var update = function() {
 		for (var i = 0; i < state.length; i++) {
 			for (var j = 0; j < state[i].length; j++) {
@@ -74,12 +91,19 @@ window.onload = function() {
 			}
 		}
 		state = future_state;
-		setColor();
+		setColors();
+	};	
+	var setColors = function() {
+		// using selector might not be the fastest way
+		for (var i = 0; i < state.length; i++) {
+			for (var j = 0; j < state[i].length; j++) {
+				$('div[id-x='+i+'][id-y='+j+']').toggleClass('active', state[i][j]);
+			}
+		}
 	};
 	
-	var setColor = function() {
-		
-	};
 	
-	
+	// executing
+	init();
+
 };

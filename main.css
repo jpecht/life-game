@@ -1,5 +1,6 @@
 body {
-
+	margin: 50px;
+	text-align: center;
 }
 
 #frame {
@@ -8,7 +9,6 @@ body {
 	border: 1px solid #407591;
 	background-color: #EEE;
 	position: relative;
-	margin: 50px;
 	padding: 0;
 	box-shadow: 1px 1px 5px rgba(0,0,0,0.7);
 }
@@ -22,6 +22,15 @@ body {
 }
 .cell:hover {
 	background-color: #64A3C4;
+}
+
+.active {
+	background-color: #AAA;
+}
+
+#step-button-container {
+	width: 400px;
+	margin-top: 50px;
 }
 
 .divider {
