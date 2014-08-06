@@ -52,6 +52,9 @@ window.onload = function() {
 
 	
 	// set up user interaction
+	$(document.body).on('keydown', function(event) {
+		if ([32, 37, 38, 39, 40].indexOf(event.which) > -1) event.preventDefault();
+	});
 	$(document.body).on('keyup', function(event) {
 		if (!game_over) {
 			if (event.which === 32) {
@@ -59,6 +62,8 @@ window.onload = function() {
 				clearCellOfUser(user_cell_coord);
 				var old_state = update();
 				updateUserCell();
+				
+				// check if periodic state has been reached
 				if (checkIfEqual(state, old_state)) {
 					game_over = true;
 					var user_cell = $('.user-active');
@@ -104,6 +109,23 @@ window.onload = function() {
 			}
 		}
 	});
+	$('#basic-tab').click(function() {
+		if (!$(this).hasClass('active')) {
+			$(this).toggleClass('active');
+			$('#game-tab').toggleClass('active');
+			
+			
+		}
+	});
+	$('#game-tab').click(function() {
+		if (!$(this).hasClass('active')) {
+			$(this).toggleClass('active');
+			$('#basic-tab').toggleClass('active');	
+			
+				
+		}
+	});
+	
 	$('#reset-button').click(function() {
 		$.noty.closeAll();
 		init();
@@ -122,15 +144,12 @@ window.onload = function() {
 
 			// random init
 			var isActive = Math.random() < 0.5;
-
-			// three by three init
-			//var isActive = (id[0] >= 9 && id[0] <= 11 && id[1] >= 9 && id[1] <= 11);
 			
 			state[id[0]][id[1]] = isActive;
 			$(this).toggleClass('active', isActive);
 		});		
 		updateUserCell();
-		//if (countNeighbors(user_cell_coord) < 2) init();
+		if (countNeighbors(user_cell_coord) < 2) init();
 	};
 	var update = function() {
 		for (var i = 0; i < state.length; i++) {
@@ -215,7 +234,7 @@ window.onload = function() {
 			}
 		}
 		return array_copy;
-	}
+	};
 	var checkIfEqual = function(array1, array2) {
 		var isEqual = true;
 		for (var i = 0; i < array1.length; i++) {
@@ -228,7 +247,7 @@ window.onload = function() {
 			}
 		}
 		return isEqual;
-	}
+	};
 
 	
 	// executing

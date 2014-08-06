@@ -3,6 +3,13 @@ body {
 	font-family: 'Source Sans Pro', sans-serif;
 }
 
+#game-type-container {
+	width: 100%;
+	text-align: center;
+	padding-right: 100px;
+}
+#main { margin-top: 30px; }
+
 #left-column {
 	float: left;
 	width: auto;

@@ -14,35 +14,43 @@
 		<link href="main.css" rel="stylesheet" type="text/css" />
 	</head>
 	<body>
-		<div id="left-column">
-			<div id="frame"></div>
-			<div id="button-container">
-				<button class="btn btn-lg btn-primary" id="reset-button">Reset</button>
+		<div id="game-type-container">
+			<div class="btn-group">
+				<button type="button" class="btn btn-default" id="basic-tab">Basic</button>
+				<button type="button" class="btn btn-default active" id="game-tab">Game</button>
 			</div>
 		</div>
-		<div id="right-column">
-			<div id="score-container"><h4>
-				<span>Score: </span>
-				<span id="score-text">0</span>
-			</h4></div>
-			<div id="instruction-text">
-				<div class="instruction-header"><h4>Instructions</h4></div>
-				<ul class="instruction-list">
-					<li>Survive! Win by staying alive and reaching a periodic state!</li>
-					<li>Use the arrow keys to move around</li>
-					<li>Hit the spacebar to stand still</li>
-					<li>The number inside your square is the number of neighbors around you</li>
-					<li>If you have less than 2 neighbors, you will start to lose health so be careful!</li>
-				</ul>
+		<div id="main">
+			<div id="left-column">
+				<div id="frame"></div>
+				<div id="button-container">
+					<button class="btn btn-lg btn-primary" id="reset-button">Reset</button>
+				</div>
 			</div>
-			<div id="rules-text">
-				<div class="instruction-header"><h4>Rules</h4></div>
-				<ul class="instruction-list">
-					<li>Any live cell with fewer than two live neighbors dies from under-population</li>
-					<li>Any live cell with two or three live neighbors lives on to the next generation</li>
-					<li>Any live cell with more than three live neighbors dies from over-population</li>
-					<li>Any dead cell with exactly three live neighbors becomes a live cell by reproduction</li>
-				</ul>
+			<div id="right-column">
+				<div id="score-container"><h4>
+					<span>Score: </span>
+					<span id="score-text">0</span>
+				</h4></div>
+				<div id="instruction-text">
+					<div class="instruction-header"><h4>Instructions</h4></div>
+					<ul class="instruction-list">
+						<li>Survive! Win by staying alive and reaching a periodic state!</li>
+						<li>Use the arrow keys to move around</li>
+						<li>Hit the spacebar to stand still</li>
+						<li>The number inside your square is the number of neighbors around you</li>
+						<li>If you have less than 2 neighbors, you will start to lose health so be careful!</li>
+					</ul>
+				</div>
+				<div id="rules-text">
+					<div class="instruction-header"><h4>Rules</h4></div>
+					<ul class="instruction-list">
+						<li>Any live cell with fewer than two live neighbors dies from under-population</li>
+						<li>Any live cell with two or three live neighbors lives on to the next generation</li>
+						<li>Any live cell with more than three live neighbors dies from over-population</li>
+						<li>Any dead cell with exactly three live neighbors becomes a live cell by reproduction</li>
+					</ul>
+				</div>
 			</div>
 		</div>
 			
