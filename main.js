@@ -1,10 +1,19 @@
 window.onload = function() {
+	var basic_mode = false;
 	
-	// create grid
+	// user properties
+	var user_cell_coord,
+		max_health = 5,
+		health = 5,
+		score = 0,
+		game_over = false;
+
+	// grid properties
 	var height = 400,
 		width = 400,
 		step = 20;	
 			
+	// create grid
 	for (var i = 0; i < height; i += step) {
 		for (var j = 0; j < width; j += step) {
 			// create cells			
@@ -32,15 +41,9 @@ window.onload = function() {
 		}			
 	}
 	
-	// user properties
-	var user_cell_coord,
-		max_health = 5,
-		health = 5,
-		score = 0,
-		game_over = false;
 
 	// set up state variables
-	var state = [], future_state = [];
+	var state = [], future_state = [], state_history = [];
 	for (var i = 0; i < height/step; i++) {
 		state[i] = [];
 		future_state[i] = [];
@@ -52,91 +55,125 @@ window.onload = function() {
 
 	
 	// set up user interaction
+	var spacebarDown = false;
 	$(document.body).on('keydown', function(event) {
 		if ([32, 37, 38, 39, 40].indexOf(event.which) > -1) event.preventDefault();
+		if (basic_mode && event.which === 32) {
+			spacebarDown = true;
+			
+			var setUpdate = function() {
+				setTimeout(function() {
+					if (spacebarDown) {
+						update();
+						setUpdate();
+					}
+				}, 500);
+			};
+			update();
+			setUpdate();			
+		}
 	});
 	$(document.body).on('keyup', function(event) {
 		if (!game_over) {
-			if (event.which === 32) {
-				// spacebar
-				clearCellOfUser(user_cell_coord);
-				var old_state = update();
-				updateUserCell();
-				
-				// check if periodic state has been reached
-				if (checkIfEqual(state, old_state)) {
-					game_over = true;
-					var user_cell = $('.user-active');
-					user_cell.removeClass(function(index, css) {
-						return (css.match(/(^|\s)health-\S+/g) || []).join(' ');
-					});
-					user_cell.addClass('health-5');
-					user_cell.text('');
-					noty({text: '<strong>Congratulations! You survived!</strong> <br /> Hit reset to play again', type: 'warning', layout: 'center', timeout: 5000});
+			if (basic_mode) {
+				if (event.which === 32) spacebarDown = false;
+			} else {
+				if (event.which === 32) {
+					// spacebar
+					clearCellOfUser(user_cell_coord);
+					var old_state = update();
+					updateUserCell();
+					
+					// check if periodic state has been reached
+					var isPeriodic = false;
+					if (state_history.length >= 1 && checkIfEqual(state, state_history[state_history.length - 1])) isPeriodic = true;
+					else if (state_history.length >= 4 && checkIfEqual(state, state_history[state_history.length - 2]) && checkIfEqual(state, state_history[state_history.length - 4])) isPeriodic = true;
+					else if (state_history.length >= 6 && checkIfEqual(state, state_history[state_history.length - 3]) && checkIfEqual(state, state_history[state_history.length - 6])) isPeriodic = true;
+					
+					if (isPeriodic) {
+						game_over = true;
+						var user_cell = $('.user-active');
+						user_cell.removeClass(function(index, css) {
+							return (css.match(/(^|\s)health-\S+/g) || []).join(' ');
+						});
+						user_cell.addClass('health-5');
+						user_cell.text('');
+						noty({text: '<strong>Congratulations! You survived!</strong> <br /> Hit reset to play again', type: 'warning', layout: 'center', timeout: 5000});
+					}
+				} else if (event.which === 37) {
+					// left arrow
+					if (user_cell_coord[0] > 0) {
+						clearCellOfUser(user_cell_coord);
+						user_cell_coord[0]--;
+						update();
+						updateUserCell();
+					}
+				} else if (event.which === 38) {
+					// up arrow
+					if (user_cell_coord[1] > 0) {
+						clearCellOfUser(user_cell_coord);
+						user_cell_coord[1]--;
+						update();
+						updateUserCell();
+					}
+				} else if (event.which === 39) {
+					// down arrow
+					if (user_cell_coord[0] < state.length - 1) {
+						clearCellOfUser(user_cell_coord);
+						user_cell_coord[0]++;
+						update();
+						updateUserCell();
+					}			
+				} else if (event.which === 40) {
+					// right arrow
+					if (user_cell_coord[1] < state[0].length - 1) {
+						clearCellOfUser(user_cell_coord);
+						user_cell_coord[1]++;
+						update();
+						updateUserCell();
+					}			
 				}
-			} else if (event.which === 37) {
-				// left arrow
-				if (user_cell_coord[0] > 0) {
-					clearCellOfUser(user_cell_coord);
-					user_cell_coord[0]--;
-					update();
-					updateUserCell();
-				}
-			} else if (event.which === 38) {
-				// up arrow
-				if (user_cell_coord[1] > 0) {
-					clearCellOfUser(user_cell_coord);
-					user_cell_coord[1]--;
-					update();
-					updateUserCell();
-				}
-			} else if (event.which === 39) {
-				// down arrow
-				if (user_cell_coord[0] < state.length - 1) {
-					clearCellOfUser(user_cell_coord);
-					user_cell_coord[0]++;
-					update();
-					updateUserCell();
-				}			
-			} else if (event.which === 40) {
-				// right arrow
-				if (user_cell_coord[1] < state[0].length - 1) {
-					clearCellOfUser(user_cell_coord);
-					user_cell_coord[1]++;
-					update();
-					updateUserCell();
-				}			
 			}
 		}
 	});
 	$('#basic-tab').click(function() {
 		if (!$(this).hasClass('active')) {
-			$(this).toggleClass('active');
-			$('#game-tab').toggleClass('active');
-			
-			
+			basic_mode = true;
+			switchType();
 		}
 	});
 	$('#game-tab').click(function() {
 		if (!$(this).hasClass('active')) {
-			$(this).toggleClass('active');
-			$('#basic-tab').toggleClass('active');	
-			
-				
+			basic_mode = false;
+			switchType();
 		}
 	});
 	
+	$('.cell').click(function() {
+		if (basic_mode) {
+			$(this).toggleClass('active');
+			var id = $(this).attr('id').split(',');
+			state[id[0]][id[1]] = $(this).hasClass('active');
+		}
+	});
+	$('#step-button').click(function() {
+		update();
+	});
+	$('#randomize-button').click(function() {
+		init();
+	});
 	$('#reset-button').click(function() {
 		$.noty.closeAll();
 		init();
-		score = 0;
-		$('#score-text').text('0');
 	});
+		
 
 	// core functions	
 	var init = function() {
 		game_over = false;
 		health = max_health;
+		score = 0;
+		$('#score-text').text('0');
 		if (user_cell_coord) clearCellOfUser(user_cell_coord);
 		user_cell_coord = [1, 1];
 		$('.cell').each(function() {
@@ -152,6 +189,8 @@ window.onload = function() {
 		if (countNeighbors(user_cell_coord) < 2) init();
 	};
 	var update = function() {
+		state_history.push(copyStateArray(state));
+		if (state_history.length === 7) state_history.shift();
 		for (var i = 0; i < state.length; i++) {
 			for (var j = 0; j < state[i].length; j++) {
 				var num_neighbors = countNeighbors([i, j]);				
@@ -162,12 +201,10 @@ window.onload = function() {
 				}
 			}
 		}
-		var old_state = copyStateArray(state);
 		state = copyStateArray(future_state);
 		setColors();
 		score++;
-		$('#score-text').text(score);
-		return old_state;
+		$('#score-text').text(score);		
 	};	
 	var setColors = function() {
 		// using selector might not be the fastest way
@@ -181,23 +218,25 @@ window.onload = function() {
 		return $('.cell[id="'+coord_array[0]+','+coord_array[1]+'"]');
 	};
 	var updateUserCell = function() {
-		var user_cell = getCell(user_cell_coord);
-		user_cell.removeClass('active');
-		user_cell.addClass('user-active');
-		state[user_cell_coord[0]][user_cell_coord[1]] = true;
-		
-		var num_neighbors = countNeighbors(user_cell_coord);
-		if (num_neighbors < 2) health--;
-		if (num_neighbors > 3 && health < max_health) health++;
-		if (health <= 0) {
-			user_cell.addClass('health-1');
-			game_over = true;
-			noty({text: '<strong>You died! =(</strong> <br /> Hit reset to try again', type: 'warning', layout: 'center', timeout: 5000});
-			user_cell.text('');
-		} else {
-			if (health >= 5) user_cell.addClass('health-5');
-			else user_cell.addClass('health-' + health);
-			user_cell.text(num_neighbors);
+		if (!basic_mode) {
+			var user_cell = getCell(user_cell_coord);
+			user_cell.removeClass('active');
+			user_cell.addClass('user-active');
+			state[user_cell_coord[0]][user_cell_coord[1]] = true;
+			
+			var num_neighbors = countNeighbors(user_cell_coord);
+			if (num_neighbors < 2) health--;
+			if (num_neighbors > 3 && health < max_health) health++;
+			if (health <= 0) {
+				user_cell.addClass('health-1');
+				game_over = true;
+				noty({text: '<strong>You died! =(</strong> <br /> Hit reset to try again', type: 'warning', layout: 'center', timeout: 5000});
+				user_cell.text('');
+			} else {
+				if (health >= 5) user_cell.addClass('health-5');
+				else user_cell.addClass('health-' + health);
+				user_cell.text(num_neighbors);
+			}
 		}
 	};
 	var countNeighbors = function(coord_array) {
@@ -248,6 +287,16 @@ window.onload = function() {
 		}
 		return isEqual;
 	};
+	var checkPatterns = function() {
+		
+	}
+
+	// type
+	var switchType = function() {
+		$('#game-tab, #basic-tab').toggleClass('active');
+		$('#step-button, #randomize-button, #reset-button, #game-instruction-list, #basic-instruction-list, #score-container').toggle();
+		init();
+	}
 
 	
 	// executing
