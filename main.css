@@ -42,7 +42,9 @@ body {
 .active {
 	background-color: #999;
 }
-.user-active {  }
+.pattern-active {
+	background-color: rgb(225,141,0);
+}
 .health-5 { background-color: rgb(100,162,196); }
 .health-4 { background-color: rgb(137,152,181); }
 .health-3 { background-color: rgb(174,141,166); }

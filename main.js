@@ -157,12 +157,15 @@ window.onload = function() {
 		}
 	});
 	$('#step-button').click(function() {
+		$(this).blur();
 		update();
 	});
 	$('#randomize-button').click(function() {
+		$(this).blur();
 		init();
 	});
 	$('#reset-button').click(function() {
+		$(this).blur();
 		$.noty.closeAll();
 		init();
 	});
@@ -210,9 +213,10 @@ window.onload = function() {
 		// using selector might not be the fastest way
 		for (var i = 0; i < state.length; i++) {
 			for (var j = 0; j < state[i].length; j++) {
-				getCell([i, j]).toggleClass('active', state[i][j]);
+				getCell([i, j]).toggleClass('active', state[i][j]).removeClass('pattern-active');
 			}
 		}
+		if (basic_mode) checkPatterns();
 	};
 	var getCell = function(coord_array) {
 		return $('.cell[id="'+coord_array[0]+','+coord_array[1]+'"]');
@@ -288,15 +292,48 @@ window.onload = function() {
 		return isEqual;
 	};
 	var checkPatterns = function() {
-		
-	}
+		// this function can be written much more efficiently
+		// check square shape
+		for (var i = 0; i < state.length - 3; i++) {
+			for (var j = 0; j < state[i].length - 3; j++) {
+				// first check for first row of 4 empty cells
+				var isSquare = true;
+				var true_states = [[i+1, j+1], [i+1, j+2], [i+2, j+1], [i+2, j+2]];
+				var false_states = [[i, j], [i+1, j], [i+2, j], [i+3, j], [i, j+1], [i, j+2], [i, j+3], [i+1, j+3], [i+2, j+3], [i+3, j+3], [i+3, j+2], [i+3, j+1]];
+				for (var k = 0; k < true_states.length; k++) {
+					var coord = true_states[k];
+					if (state[coord[0]][coord[1]] === false) {
+						isSquare = false;
+						break;
+					}
+				}
+				if (isSquare) {
+					for (var k = 0; k < false_states.length; k++) {
+						var coord = false_states[k];
+						if (state[coord[0]][coord[1]] === true) {
+							isSquare = false;
+							break;
+						}
+					}
+				}
+				
+				if (isSquare) {
+					// color squares
+					var cell_ids_to_color = [(i+1) + ',' + (j+1), (i+1) + ',' + (j+2), (i+2) + ',' + (j+1), (i+2) + ',' + (j+2)];
+					for (var k = 0; k < 4; k++) {
+						$('.cell[id="'+cell_ids_to_color[k]+'"]').addClass('pattern-active').removeClass('active');
+					}
+				}				
+			}
+		}
+	};
 
 	// type
 	var switchType = function() {
 		$('#game-tab, #basic-tab').toggleClass('active');
 		$('#step-button, #randomize-button, #reset-button, #game-instruction-list, #basic-instruction-list, #score-container').toggle();
 		init();
-	}
+	};
 
 	
 	// executing
