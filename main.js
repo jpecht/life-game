@@ -8,51 +8,18 @@ window.onload = function() {
 		score = 0,
 		game_over = false;
 
-	// grid properties
+	// grid and state properties
 	var height = 400,
 		width = 400,
-		step = 20;	
+		step = 20,
+		min_x_cells = 10,
+		min_y_cells = 10,
+		max_x_cells = 25,
+		max_y_cells = 25,
+		state = [],
+		future_state = [],
+		state_history = [];
 			
-	// create grid
-	for (var i = 0; i < height; i += step) {
-		for (var j = 0; j < width; j += step) {
-			// create cells			
-			$('<div class="cell"></div>').appendTo('#frame')
-				.css('width', step + 'px')
-				.css('height', step + 'px')
-				.css('left', i + 'px')
-				.css('top', j + 'px')
-				.attr('id', (i/step) + ',' + (j/step));
-
-			// create dividers
-			if (i === 0 && j !== 0) {
-				$('<div class="divider"></div>').appendTo('#frame')
-					.css('width', width + 'px')
-					.css('height', '1px')
-					.css('top', j + 'px')
-					.css('left', '0px');					
-			} else if (j === 0 && i !== 0) {
-				$('<div class="divider"></div>').appendTo('#frame')
-					.css('width', '1px')
-					.css('height', height + 'px')
-					.css('top', '0px')
-					.css('left', i + 'px');
-			}
-		}			
-	}
-	
-
-	// set up state variables
-	var state = [], future_state = [], state_history = [];
-	for (var i = 0; i < height/step; i++) {
-		state[i] = [];
-		future_state[i] = [];
-		for (var j = 0; j < width/step; j++) {
-			state[i][j] = false;
-			future_state[i][j] = false;
-		}
-	}
-
 	
 	// set up user interaction
 	var spacebarDown = false;
@@ -148,7 +115,32 @@ window.onload = function() {
 			switchType();
 		}
 	});
+
+
+	// size inputs
+	$('.size-input').change(function() {
+		var size_x = +$('#size-x').val();
+		var size_y = +$('#size-y').val();
+
+		if (isNaN(size_x)) size_x = 20;
+		else if (size_x < min_x_cells) size_x = min_x_cells;
+		else if (size_x > max_x_cells) size_x = max_x_cells;
+		if (isNaN(size_y)) size_y = 20;
+		else if (size_y < min_y_cells) size_y = min_y_cells;
+		else if (size_y > max_y_cells) size_y = max_y_cells;
+
+		$('#size-x').val(size_x);
+		$('#size-y').val(size_y);
+
+		height = step * size_x;
+		width = step * size_y;
+		$('#frame').css('height', height).css('width', width);
+
+		createGridAndState();
+		init();
+	});
 	
+	// buttons for the basic tab
 	$('.cell').click(function() {
 		if (basic_mode) {
 			$(this).toggleClass('active');
@@ -156,6 +148,13 @@ window.onload = function() {
 			state[id[0]][id[1]] = $(this).hasClass('active');
 		}
 	});
+	$('#reset-button').click(function() {
+		$(this).blur();
+		$.noty.closeAll();
+		init();
+	});
+
+	// buttons for the game tab
 	$('#step-button').click(function() {
 		$(this).blur();
 		update();
@@ -164,14 +163,9 @@ window.onload = function() {
 		$(this).blur();
 		init();
 	});
-	$('#reset-button').click(function() {
-		$(this).blur();
-		$.noty.closeAll();
-		init();
-	});
 		
 
-	// core functions	
+	// core functions
 	var init = function() {
 		game_over = false;
 		health = max_health;
@@ -334,8 +328,50 @@ window.onload = function() {
 		$('#step-button, #randomize-button, #reset-button, #game-instruction-list, #basic-instruction-list, #score-container').toggle();
 		init();
 	};
+	var createGridAndState = function() {
+		// create grid
+		$('#frame').empty();
+		for (var i = 0; i < width; i += step) {
+			for (var j = 0; j < height; j += step) {
+				// create cells			
+				$('<div class="cell"></div>').appendTo('#frame')
+					.css('width', step + 'px')
+					.css('height', step + 'px')
+					.css('left', i + 'px')
+					.css('top', j + 'px')
+					.attr('id', (i/step) + ',' + (j/step));
+
+				// create dividers
+				if (i === 0 && j !== 0) {
+					$('<div class="divider"></div>').appendTo('#frame')
+						.css('width', width + 'px')
+						.css('height', '1px')
+						.css('top', j + 'px')
+						.css('left', '0px');					
+				} else if (j === 0 && i !== 0) {
+					$('<div class="divider"></div>').appendTo('#frame')
+						.css('width', '1px')
+						.css('height', height + 'px')
+						.css('top', '0px')
+						.css('left', i + 'px');
+				}
+			}			
+		}
+
+		// set up state variables
+		state = [], future_state = [], state_history = [];
+		for (var i = 0; i < width/step; i++) {
+			state[i] = [];
+			future_state[i] = [];
+			for (var j = 0; j < height/step; j++) {
+				state[i][j] = false;
+				future_state[i][j] = false;
+			}
+		}
+	}
 
 	
 	// executing
+	createGridAndState();
 	init();
 };
