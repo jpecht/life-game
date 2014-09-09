@@ -1,20 +1,28 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
-"http://www.w3.org/TR/html4/strict.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<title>index</title>
-		<meta name="author" content="jpecht" />
-		<!-- Date: 2014-07-28 -->
-				
-		 
+		<meta charset="utf-8">
+
+		<!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame
+		Remove this if you use the .htaccess -->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+		<title>Game of Life</title>
+		<meta name="description" content="">
+		<meta name="author" content="jpecht">
+
+		<meta name="viewport" content="width=device-width; initial-scale=1.0">
+		<!-- <meta name="viewport" content="user-scalable=yes"> -->
+
+		<link rel="shortcut icon" href="../img/j_icon.ico">
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 		<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" type="text/css" />
 		<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400' rel='stylesheet' type='text/css'>
 		<link href="main.css" rel="stylesheet" type="text/css" />
 	</head>
 	<body>
 		<div id="game-type-container">
+			<a id="back-to-site-link"><&nbsp;&nbsp;Back to Site</a>
 			<div class="btn-group">
 				<button type="button" class="btn btn-default" id="basic-tab">Basic</button>
 				<button type="button" class="btn btn-default active" id="game-tab">Game</button>
@@ -69,6 +77,11 @@
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 		<script src="lib/jquery.noty.packaged.min.js"></script>
 		<script src="main.js"></script>
+		<script>
+			$('#back-to-site-link').click(function() {
+				window.location = '../#games';
+			});
+		</script>
 	</body>
 </html>
 
