@@ -41,65 +41,63 @@ window.onload = function() {
 		}
 	});
 	$(document.body).on('keyup', function(event) {
-		if (!game_over) {
-			if (basic_mode) {
-				if (event.which === 32) spacebarDown = false;
-			} else {
-				if (event.which === 32) {
-					// spacebar
-					clearCellOfUser(user_cell_coord);
-					var old_state = update();
-					updateUserCell();
-					
-					// check if periodic state has been reached
-					var isPeriodic = false;
-					if (state_history.length >= 1 && checkIfEqual(state, state_history[state_history.length - 1])) isPeriodic = true;
-					else if (state_history.length >= 4 && checkIfEqual(state, state_history[state_history.length - 2]) && checkIfEqual(state, state_history[state_history.length - 4])) isPeriodic = true;
-					else if (state_history.length >= 6 && checkIfEqual(state, state_history[state_history.length - 3]) && checkIfEqual(state, state_history[state_history.length - 6])) isPeriodic = true;
-					
-					if (isPeriodic) {
-						game_over = true;
-						var user_cell = $('.user-active');
-						user_cell.removeClass(function(index, css) {
-							return (css.match(/(^|\s)health-\S+/g) || []).join(' ');
-						});
-						user_cell.addClass('health-5');
-						user_cell.text('');
-						noty({text: '<strong>Congratulations! You survived!</strong> <br /> Hit reset to play again', type: 'warning', layout: 'center', timeout: 5000});
-					}
-				} else if (event.which === 37) {
-					// left arrow
-					if (user_cell_coord[0] > 0) {
-						clearCellOfUser(user_cell_coord);
-						user_cell_coord[0]--;
-						update();
-						updateUserCell();
-					}
-				} else if (event.which === 38) {
-					// up arrow
-					if (user_cell_coord[1] > 0) {
-						clearCellOfUser(user_cell_coord);
-						user_cell_coord[1]--;
-						update();
-						updateUserCell();
-					}
-				} else if (event.which === 39) {
-					// down arrow
-					if (user_cell_coord[0] < state.length - 1) {
-						clearCellOfUser(user_cell_coord);
-						user_cell_coord[0]++;
-						update();
-						updateUserCell();
-					}			
-				} else if (event.which === 40) {
-					// right arrow
-					if (user_cell_coord[1] < state[0].length - 1) {
-						clearCellOfUser(user_cell_coord);
-						user_cell_coord[1]++;
-						update();
-						updateUserCell();
-					}			
+		if (basic_mode) {
+			if (event.which === 32) spacebarDown = false;
+		} else if (!game_over) {
+			if (event.which === 32) {
+				// spacebar
+				clearCellOfUser(user_cell_coord);
+				var old_state = update();
+				updateUserCell();
+				
+				// check if periodic state has been reached
+				var isPeriodic = false;
+				if (state_history.length >= 1 && checkIfEqual(state, state_history[state_history.length - 1])) isPeriodic = true;
+				else if (state_history.length >= 4 && checkIfEqual(state, state_history[state_history.length - 2]) && checkIfEqual(state, state_history[state_history.length - 4])) isPeriodic = true;
+				else if (state_history.length >= 6 && checkIfEqual(state, state_history[state_history.length - 3]) && checkIfEqual(state, state_history[state_history.length - 6])) isPeriodic = true;
+				
+				if (isPeriodic) {
+					game_over = true;
+					var user_cell = $('.user-active');
+					user_cell.removeClass(function(index, css) {
+						return (css.match(/(^|\s)health-\S+/g) || []).join(' ');
+					});
+					user_cell.addClass('health-5');
+					user_cell.text('');
+					noty({text: '<strong>Congratulations! You survived!</strong> <br /> Hit reset to play again', type: 'warning', layout: 'center', timeout: 5000});
 				}
+			} else if (event.which === 37) {
+				// left arrow
+				if (user_cell_coord[0] > 0) {
+					clearCellOfUser(user_cell_coord);
+					user_cell_coord[0]--;
+					update();
+					updateUserCell();
+				}
+			} else if (event.which === 38) {
+				// up arrow
+				if (user_cell_coord[1] > 0) {
+					clearCellOfUser(user_cell_coord);
+					user_cell_coord[1]--;
+					update();
+					updateUserCell();
+				}
+			} else if (event.which === 39) {
+				// down arrow
+				if (user_cell_coord[0] < state.length - 1) {
+					clearCellOfUser(user_cell_coord);
+					user_cell_coord[0]++;
+					update();
+					updateUserCell();
+				}			
+			} else if (event.which === 40) {
+				// right arrow
+				if (user_cell_coord[1] < state[0].length - 1) {
+					clearCellOfUser(user_cell_coord);
+					user_cell_coord[1]++;
+					update();
+					updateUserCell();
+				}			
 			}
 		}
 	});
@@ -186,13 +184,15 @@ window.onload = function() {
 		if (countNeighbors(user_cell_coord) < 2) init();
 	};
 	var update = function() {
-		state_history.push(copyStateArray(state));
-		if (state_history.length === 7) state_history.shift();
+		//state_history.push(copyStateArray(state));
+		//if (state_history.length === 7) state_history.shift();
 		for (var i = 0; i < state.length; i++) {
 			for (var j = 0; j < state[i].length; j++) {
-				var num_neighbors = countNeighbors([i, j]);				
-				if (num_neighbors === 2 || num_neighbors === 3) {
-					future_state[i][j] = (state[i][j] === true || num_neighbors === 3);
+				var num_neighbors = countNeighbors([i, j]);
+				if (num_neighbors === 2) {
+					future_state[i][j] = true;
+				} else if (num_neighbors === 3) {
+					future_state[i][j] = state[i][j];
 				} else {
 					future_state[i][j] = false;
 				}
@@ -210,7 +210,7 @@ window.onload = function() {
 				getCell([i, j]).toggleClass('active', state[i][j]).removeClass('pattern-active');
 			}
 		}
-		if (basic_mode) checkPatterns();
+		//if (basic_mode) checkPatterns();
 	};
 	var getCell = function(coord_array) {
 		return $('.cell[id="'+coord_array[0]+','+coord_array[1]+'"]');
@@ -263,14 +263,15 @@ window.onload = function() {
 		cell.text('');
 	};
 	var copyStateArray = function(array) {
-		var array_copy = [];
+		/*var array_copy = [];
 		for (var i = 0; i < array.length; i++) {
 			array_copy[i] = [];
 			for (var j = 0; j < array[i].length; j++) {
 				array_copy[i][j] = array[i][j];
 			}
 		}
-		return array_copy;
+		return array_copy;*/
+		return array.slice(0);
 	};
 	var checkIfEqual = function(array1, array2) {
 		var isEqual = true;
